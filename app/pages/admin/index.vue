@@ -8,6 +8,16 @@ const articles = computed(() => (Array.isArray(articlesData.value) ? articlesDat
 const searchQuery = ref('')
 const searchTerm = ref('')
 
+const deleteArticle = async (articleId: number) => {
+  if (!confirm('确定要删除这篇文章吗？')) return
+  try {
+    await $fetch(`/api/articles/${articleId}`, { method: 'DELETE' })
+    await refresh()
+  } catch (err: any) {
+    alert('删除失败: ' + (err.data?.statusMessage || err.message))
+  }
+}
+
 const filteredArticles = computed(() => {
   if (!searchTerm.value) return articles.value
   
@@ -90,7 +100,10 @@ definePageMeta({
         </thead>
         <tbody>
           <tr v-for="article in filteredArticles" :key="article.id" class="border-b transition-colors hover:bg-muted/50">
-            <td class="p-4 align-middle font-medium" v-html="highlightText(article.title, searchTerm)"/>
+            <td class="p-4 align-middle font-medium">
+              <span v-if="article.visibility !== 1" class="text-muted-foreground mr-2">[不可见]</span>
+              <span v-html="highlightText(article.title, searchTerm)"/>
+            </td>
             <td class="p-4 align-middle text-muted-foreground font-mono">
               /{{ article.group_slug ? article.group_slug + '/' : 'system/' }}{{ article.slug }}
             </td>
@@ -114,15 +127,7 @@ definePageMeta({
               <button 
                 v-if="!(article.slug === 'index' && article.group_slug === 'system')"
                 class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-destructive/50 text-destructive hover:bg-destructive hover:text-destructive-foreground"
-                @click="async () => {
-                  if (!confirm('确定要删除这篇文章吗？')) return
-                  try {
-                    await $fetch(`/api/articles/${article.id}`, { method: 'DELETE' })
-                    await refresh()
-                  } catch (err: any) {
-                    alert('删除失败: ' + err.data?.statusMessage)
-                  }
-                }"
+                @click="deleteArticle(article.id)"
               >
                 <Trash2 class="h-4 w-4" />
               </button>

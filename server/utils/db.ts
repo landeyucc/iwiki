@@ -25,6 +25,7 @@ db.exec(`
     content TEXT NOT NULL,
     content_type TEXT DEFAULT 'md',
     description TEXT,
+    visibility INTEGER DEFAULT 1,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE SET NULL
   );
@@ -49,6 +50,10 @@ try {
 
 try {
   db.exec("ALTER TABLE groups ADD COLUMN is_pinned INTEGER DEFAULT 0")
+} catch (_e) { /* 字段可能已存在 */ }
+
+try {
+  db.exec("ALTER TABLE articles ADD COLUMN visibility INTEGER DEFAULT 1")
 } catch (_e) { /* 字段可能已存在 */ }
 
 // 初始化系统设置

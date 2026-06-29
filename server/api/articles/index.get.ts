@@ -45,6 +45,7 @@ export default defineEventHandler(async (event): Promise<Article | Article[]> =>
     SELECT a.*, g.slug as group_slug 
     FROM articles a 
     LEFT JOIN groups g ON a.group_id = g.id 
+    WHERE a.visibility = 1
     ORDER BY a.updated_at DESC
   `).all() as Article[]
 })

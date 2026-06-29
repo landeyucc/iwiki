@@ -4,7 +4,7 @@ import { checkAuth } from '../../utils/auth'
 export default defineEventHandler(async (event) => {
   checkAuth(event)
   const body = await readBody(event)
-  const { title, slug, content, description, content_type } = body
+  const { title, slug, content, description, content_type, visibility } = body
   let { group_id } = body
 
   if (!title || !slug || !content) {
@@ -44,9 +44,9 @@ export default defineEventHandler(async (event) => {
 
   try {
     const info = db.prepare(`
-      INSERT INTO articles (title, slug, content, description, content_type, group_id) 
-      VALUES (?, ?, ?, ?, ?, ?)
-    `).run(title, slug, content, description, content_type || 'md', group_id)
+      INSERT INTO articles (title, slug, content, description, content_type, group_id, visibility) 
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).run(title, slug, content, description, content_type || 'md', group_id, visibility ?? 1)
     return { id: info.lastInsertRowid }
   } catch (error: any) {
     throw createError({

@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
   checkAuth(event)
   const id = getRouterParam(event, 'id')
   const body = await readBody(event)
-  const { title, slug, content, description, content_type } = body
+  const { title, slug, content, description, content_type, visibility } = body
   let { group_id } = body
 
   const systemGroup = db.prepare('SELECT id FROM groups WHERE slug = ?').get('system') as { id: number } | undefined
@@ -37,9 +37,9 @@ export default defineEventHandler(async (event) => {
   try {
     db.prepare(`
       UPDATE articles 
-      SET title = ?, slug = ?, content = ?, description = ?, content_type = ?, group_id = ?, updated_at = CURRENT_TIMESTAMP 
+      SET title = ?, slug = ?, content = ?, description = ?, content_type = ?, group_id = ?, visibility = ?, updated_at = CURRENT_TIMESTAMP 
       WHERE id = ?
-    `).run(title, slug, content, description, content_type, group_id, id)
+    `).run(title, slug, content, description, content_type, group_id, visibility ?? 1, id)
     return { success: true }
   } catch (error: any) {
     throw createError({

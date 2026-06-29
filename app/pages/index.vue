@@ -33,7 +33,7 @@ useSeoMeta({
 
       <div class="prose prose-zinc dark:prose-invert max-w-none prose-headings:scroll-mt-20 prose-a:text-primary prose-a:no-underline hover:prose-a:underline">
         <MDC v-if="article.content_type === 'md'" :value="article.content" />
-        <div v-else v-html="article.content"/>
+        <HtmlRenderer v-else :content="article.content" />
       </div>
 
       <div class="mt-12 pt-8 border-t flex justify-between items-center text-sm text-muted-foreground">

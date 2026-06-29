@@ -15,7 +15,8 @@ const form = ref({
   description: '',
   content: '',
   content_type: 'md' as 'md' | 'html',
-  group_id: null as number | null
+  group_id: null as number | null,
+  visibility: 1
 })
 
 const { data: groupsData } = await useFetch<Group[]>('/api/groups')
@@ -72,7 +73,8 @@ if (!isNew) {
         description: article.description || '',
         content: article.content,
         content_type: article.content_type,
-        group_id: article.group_id
+        group_id: article.group_id,
+        visibility: article.visibility ?? 1
       }
     }
   } catch (err) {
@@ -216,12 +218,24 @@ definePageMeta({
         </div>
 
         <div class="space-y-2">
+          <label class="text-sm font-medium">可见性</label>
+          <div class="flex gap-4">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input v-model="form.visibility" type="radio" :value="1" class="accent-primary" >
+              <span class="text-sm">公开</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input v-model="form.visibility" type="radio" :value="0" class="accent-primary" >
+              <span class="text-sm">不可见</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="space-y-2">
           <label class="text-sm font-medium">内容 ({{ form.content_type === 'md' ? 'Markdown' : 'HTML' }})</label>
-          <textarea 
+          <CodeEditor 
             v-model="form.content"
-            rows="15"
-            class="w-full px-3 py-2 border rounded-md bg-background font-mono text-sm focus:ring-2 focus:ring-primary outline-none"
-            :placeholder="form.content_type === 'md' ? '# 在这里编写 Markdown 内容...' : '<div class=\'p-4\'>在这里编写 HTML 内容...</div>'"
+            :language="form.content_type"
           />
         </div>
       </div>
@@ -235,7 +249,7 @@ definePageMeta({
             
             <div class="mt-8 border-t pt-8">
               <MDC v-if="form.content_type === 'md'" :value="form.content || '内容预览...'" />
-              <div v-else v-html="form.content || '内容预览...'"/>
+              <HtmlRenderer v-else :content="form.content || '内容预览...'" />
             </div>
           </div>
         </div>

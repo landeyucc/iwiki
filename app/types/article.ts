@@ -6,6 +6,7 @@ export interface Article {
   content: string
   content_type: 'md' | 'html'
   description: string | null
+  visibility: number
   updated_at: string
   group_slug?: string
 }
