@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { Article } from '~/types/article'
 
-const { isAuthenticated } = useAuth()
 const { data: article } = await useAsyncData('index-article', async () => {
   try {
     const res = await $fetch<Article>('/api/articles', {
@@ -26,19 +25,9 @@ useSeoMeta({
 <template>
   <div v-if="article" class="py-12 lg:py-20">
     <div class="container mx-auto max-w-4xl">
-      <div class="mb-8">
-        <h1 class="text-4xl font-bold tracking-tight mb-4">{{ article.title }}</h1>
-        <p v-if="article.description" class="text-lg text-muted-foreground">{{ article.description }}</p>
-      </div>
-
       <div class="prose prose-zinc dark:prose-invert max-w-none prose-headings:scroll-mt-20 prose-a:text-primary prose-a:no-underline hover:prose-a:underline">
         <MDC v-if="article.content_type === 'md'" :value="article.content" />
         <HtmlRenderer v-else :content="article.content" />
-      </div>
-
-      <div class="mt-12 pt-8 border-t flex justify-between items-center text-sm text-muted-foreground">
-        <span>最后更新于: {{ new Date(article.updated_at).toLocaleDateString() }}</span>
-        <NuxtLink v-if="isAuthenticated" :to="`/admin/edit/${article.id}`" class="hover:text-foreground underline underline-offset-4">编辑此页</NuxtLink>
       </div>
     </div>
   </div>

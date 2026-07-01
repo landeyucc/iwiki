@@ -249,7 +249,7 @@ definePageMeta({
             
             <div class="mt-8 border-t pt-8">
               <MDC v-if="form.content_type === 'md'" :value="form.content || '内容预览...'" />
-              <HtmlRenderer v-else :content="form.content || '内容预览...'" />
+              <HtmlRenderer v-else :content="form.content || '内容预览...'" :show-fullscreen-button="true" />
             </div>
           </div>
         </div>

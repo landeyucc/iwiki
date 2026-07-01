@@ -60,7 +60,7 @@ try {
 const initSettings = [
   { key: 'title', value: 'iWiki 系统' },
   { key: 'favicon', value: '/favicon.ico' },
-  { key: 'copyright', value: '© 2024 iWiki System. All rights reserved.' },
+  { key: 'copyright', value: '© 2026 Coldsea Team. All rights reserved.' },
   { key: 'icp', value: '' }
 ]
 
@@ -91,7 +91,7 @@ if (count.total === 0) {
   <div class="container relative z-10">
     <div class="mx-auto max-w-3xl text-center">
       <h1 class="text-4xl font-bold tracking-tight sm:text-6xl mb-6">
-        现代化简易 <span class="text-primary">iWiki</span> 系统
+        现代化简易 <span class="text-primary">Wiki</span> 系统
       </h1>
       <p class="text-lg text-muted-foreground mb-10">
         基于 Nuxt 3 构建，为您提供极简、美观且功能完备的知识管理体验。

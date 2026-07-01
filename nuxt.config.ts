@@ -29,8 +29,8 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    adminUser: process.env.ADMIN_USER || 'admin',
-    adminPass: process.env.ADMIN_PASS || 'admin123',
+    adminUser: process.env.ADMIN_USERNAME || process.env.ADMIN_USER || 'admin',
+    adminPass: process.env.ADMIN_PASSWORD || process.env.ADMIN_PASS || 'admin123',
     jwtSecret: process.env.JWT_SECRET || 'secret-key'
   },
 

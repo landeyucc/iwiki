@@ -3,6 +3,7 @@ import { Maximize2, Minimize2 } from '@lucide/vue'
 
 const props = defineProps<{
   content: string
+  showFullscreenButton?: boolean
 }>()
 
 const decodedContent = computed(() => {
@@ -32,10 +33,12 @@ const toggleFullscreen = () => {
   isFullscreen.value = !isFullscreen.value
 }
 
-onMounted(() => {
+const updateContent = () => {
   if (!hostRef.value) return
   
-  const shadow = hostRef.value.attachShadow({ mode: 'open' })
+  const shadow = hostRef.value.shadowRoot || hostRef.value.attachShadow({ mode: 'open' })
+  
+  shadow.innerHTML = ''
   
   const wrapper = document.createElement('div')
   wrapper.innerHTML = decodedContent.value
@@ -51,18 +54,32 @@ onMounted(() => {
     newScript.textContent = oldScript.textContent
     oldScript.parentNode?.replaceChild(newScript, oldScript)
   })
+}
+
+onMounted(() => {
+  updateContent()
+})
+
+watch(() => props.content, () => {
+  updateContent()
 })
 </script>
 
 <template>
   <div :class="{ 'fixed inset-0 z-50 bg-background overflow-auto': isFullscreen, 'relative': !isFullscreen }">
     <button
-      class="sticky top-4 right-4 float-right z-10 p-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg"
+      v-if="showFullscreenButton"
+      class="absolute top-3 right-3 z-20 p-2 rounded-md bg-background/80 text-foreground border border-border shadow-sm hover:bg-background/95 transition-all duration-200"
+      :class="{ 'opacity-0 pointer-events-none': !isFullscreen, 'opacity-100 pointer-events-auto': isFullscreen }"
       @click="toggleFullscreen"
     >
       <Maximize2 v-if="!isFullscreen" class="h-4 w-4" />
       <Minimize2 v-else class="h-4 w-4" />
     </button>
-    <div ref="hostRef" class="html-renderer-host" :class="{ 'container mx-auto py-8': isFullscreen }" />
+    <div 
+      ref="hostRef" 
+      class="html-renderer-host" 
+      :class="{ 'container mx-auto py-8': isFullscreen }" 
+    />
   </div>
 </template>

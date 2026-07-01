@@ -25,18 +25,20 @@
 
 ## 快速开始
 
-### 环境要求
+### 方式一：本地开发
+
+#### 环境要求
 
 - Node.js 18+
 - npm 或 pnpm
 
-### 安装依赖
+#### 安装依赖
 
 ```bash
 npm install
 ```
 
-### 开发环境运行
+#### 开发环境运行
 
 ```bash
 npm run dev
@@ -44,17 +46,61 @@ npm run dev
 
 访问 http://localhost:3000 查看应用。
 
-### 生产构建
+#### 生产构建
 
 ```bash
 npm run build
-```
-
-### 预览构建结果
-
-```bash
 npm run preview
 ```
+
+### 方式二：Docker 部署（推荐）
+
+#### 使用 Docker Compose
+
+```bash
+# 构建并启动
+docker-compose up -d
+
+# 查看日志
+docker-compose logs -f
+
+# 停止服务
+docker-compose down
+```
+
+#### 使用 Dockerfile
+
+```bash
+# 构建镜像
+docker build -t iwiki .
+
+# 运行容器
+docker run -d \
+  -p 3000:3000 \
+  -v $(pwd)/wiki.db:/app/wiki.db \
+  -e ADMIN_USERNAME=admin \
+  -e ADMIN_PASSWORD=admin123 \
+  -e JWT_SECRET=your_secret_key \
+  --name iwiki \
+  iwiki
+```
+
+## 配置说明
+
+### 环境变量
+
+在项目根目录创建 `.env` 文件：
+
+```bash
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=admin123
+JWT_SECRET=your_very_long_random_secret_key
+```
+
+### 数据持久化
+
+- 数据库文件：`wiki.db`
+- 建议定期导出备份（后台管理 > 备份管理）
 
 ## 许可证
 

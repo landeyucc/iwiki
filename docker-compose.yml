@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  iwiki:
+    build: .
+    container_name: iwiki
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - ADMIN_USERNAME=admin
+      - ADMIN_PASSWORD=admin123
+      - JWT_SECRET=your_secret_key_here_change_in_production
+    volumes:
+      - ./data:/app/data
+      - ./wiki.db:/app/wiki.db
+    restart: unless-stopped
