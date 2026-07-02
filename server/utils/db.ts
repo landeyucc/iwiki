@@ -56,12 +56,21 @@ try {
   db.exec("ALTER TABLE articles ADD COLUMN visibility INTEGER DEFAULT 1")
 } catch (_e) { /* 字段可能已存在 */ }
 
+// 确保 beian 设置存在（用于已存在的数据库）
+try {
+  const beianSetting = db.prepare("SELECT value FROM settings WHERE key = 'beian'").get()
+  if (!beianSetting) {
+    db.prepare("INSERT INTO settings (key, value) VALUES (?, ?)").run('beian', '')
+  }
+} catch (_e) { /* settings 表可能不存在 */ }
+
 // 初始化系统设置
 const initSettings = [
   { key: 'title', value: 'iWiki 系统' },
   { key: 'favicon', value: '/favicon.ico' },
   { key: 'copyright', value: '© 2026 Coldsea Team. All rights reserved.' },
-  { key: 'icp', value: '' }
+  { key: 'icp', value: '' },
+  { key: 'beian', value: '' }
 ]
 
 const insertSetting = db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)')

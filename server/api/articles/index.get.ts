@@ -1,11 +1,25 @@
 import type { Article } from '~/types/article'
 import db from '../../utils/db'
+import jwt from 'jsonwebtoken'
 
 export default defineEventHandler(async (event): Promise<Article | Article[]> => {
   const query = getQuery(event)
   const slug = query.slug as string
   const id = query.id as string
   const groupSlug = query.groupSlug as string
+
+  const token = getCookie(event, 'auth_token')
+  const config = useRuntimeConfig()
+  let isAuthenticated = false
+  
+  if (token) {
+    try {
+      jwt.verify(token, config.jwtSecret)
+      isAuthenticated = true
+    } catch (_e) {
+      isAuthenticated = false
+    }
+  }
 
   if (id) {
     const article = db.prepare(`
@@ -41,11 +55,13 @@ export default defineEventHandler(async (event): Promise<Article | Article[]> =>
     return article
   }
 
+  const visibilityFilter = isAuthenticated ? '' : 'WHERE a.visibility = 1'
+  
   return db.prepare(`
     SELECT a.*, g.slug as group_slug 
     FROM articles a 
     LEFT JOIN groups g ON a.group_id = g.id 
-    WHERE a.visibility = 1
+    ${visibilityFilter}
     ORDER BY a.updated_at DESC
   `).all() as Article[]
 })

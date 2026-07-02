@@ -224,10 +224,20 @@ definePageMeta({
               <input v-model="form.visibility" type="radio" :value="1" class="accent-primary" >
               <span class="text-sm">公开</span>
             </label>
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input v-model="form.visibility" type="radio" :value="0" class="accent-primary" >
+            <label class="flex items-center gap-2 cursor-pointer" :class="{ 'opacity-50 cursor-not-allowed': isSystemIndexArticle }">
+              <input 
+                v-model="form.visibility" 
+                type="radio" 
+                :value="0" 
+                :disabled="isSystemIndexArticle"
+                class="accent-primary disabled:cursor-not-allowed" 
+              >
               <span class="text-sm">不可见</span>
             </label>
+          </div>
+          <div v-if="isSystemIndexArticle" class="flex items-center gap-2 text-amber-500 text-sm">
+            <AlertTriangle class="h-4 w-4" />
+            <span>index文章必须保持公开可见</span>
           </div>
         </div>
 

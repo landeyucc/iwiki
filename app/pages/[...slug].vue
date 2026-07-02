@@ -1,9 +1,38 @@
 <script setup lang="ts">
-import type { Article } from '~/types/article'
+import type { Article, Group } from '~/types/article'
 
 const route = useRoute()
 const { isAuthenticated } = useAuth()
 const slugParts = (route.params.slug || []) as string[]
+
+// 如果只有一个slug，先检查是否是分组路径
+if (slugParts.length === 1 && slugParts[0]) {
+  const potentialGroupSlug = slugParts[0]
+  
+  // 获取所有分组
+  const { data: groupsData } = await useAsyncData('check-groups', () => $fetch<Group[]>('/api/groups'))
+  
+  if (groupsData.value) {
+    const group = groupsData.value.find(g => g.slug === potentialGroupSlug)
+    
+    // 如果找到对应的分组，获取该分组的第一篇文章并跳转
+    if (group) {
+      const { data: allArticles } = await useAsyncData('group-articles', () => $fetch<Article[]>('/api/articles'))
+      
+      if (allArticles.value && allArticles.value.length > 0) {
+        const firstArticle = allArticles.value.find(a => a.group_id === group.id)
+        
+        if (firstArticle) {
+          navigateTo(`/${group.slug}/${firstArticle.slug}`)
+        } else {
+          // 分组存在但没有文章，跳转到首页
+          navigateTo('/')
+        }
+      }
+    }
+  }
+}
+
 let groupSlug = ''
 let slug = ''
 
@@ -117,7 +146,7 @@ useSeoMeta({
     </div>
     
     <!-- 目录 -->
-    <TableOfContents v-if="!isIndexArticle" :toc="toc" />
+    <TableOfContents v-if="!isIndexArticle && article.content_type === 'md'" :toc="toc" />
   </div>
 </template>
 

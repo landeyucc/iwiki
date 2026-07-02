@@ -81,12 +81,25 @@ definePageMeta({
 
         <div class="space-y-2">
           <label class="text-sm font-medium">备案号</label>
-          <input 
+          <input
             v-model="form.icp"
             type="text"
             class="w-full px-3 py-2 border rounded-md bg-background"
             placeholder="例如：京ICP备XXXXXXXX号"
           >
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-sm font-medium">公安备案号</label>
+          <input
+            v-model="form.beian"
+            type="text"
+            class="w-full px-3 py-2 border rounded-md bg-background"
+            placeholder="例如：43011102000123"
+          >
+          <p class="text-xs text-muted-foreground">
+            完整填写：例如"湘公网安备43011102000123号"，系统会自动提取数字用于生成查询链接
+          </p>
         </div>
       </div>
 

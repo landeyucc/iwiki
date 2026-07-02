@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { copyright, icp } = useSettings()
+const { copyright, icp, beian, beianCode } = useSettings()
 </script>
 
 <template>
@@ -12,15 +12,29 @@ const { copyright, icp } = useSettings()
       <div class="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
         <div class="flex flex-col md:flex-row items-center gap-4 text-sm text-muted-foreground">
           <span>{{ copyright }}</span>
-          <span v-if="icp" class="hidden md:inline text-muted-foreground/30">|</span>
-          <a 
-            v-if="icp" 
-            href="https://beian.miit.gov.cn/" 
-            target="_blank" 
+          <span v-if="icp || beian" class="hidden md:inline text-muted-foreground/30">|</span>
+          <a
+            v-if="icp"
+            href="https://beian.miit.gov.cn/"
+            target="_blank"
             rel="noopener noreferrer"
             class="hover:text-foreground hover:underline transition-colors"
           >
             {{ icp }}
+          </a>
+          <a
+            v-if="beian"
+            :href="`https://beian.mps.gov.cn/#/query/webSearch?code=${beianCode}`"
+            rel="noreferrer"
+            target="_blank"
+            class="inline-flex items-center gap-1 hover:text-foreground hover:underline transition-colors"
+          >
+            <img
+              src="https://res.coldsea.cn/others/beian/gongan.png"
+              alt="公安备案图标"
+              class="h-[1em] w-auto inline-block"
+            >
+            <span>湘公网安备{{ beianCode }}号</span>
           </a>
         </div>
       </div>
