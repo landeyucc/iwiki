@@ -23,3 +23,11 @@ export interface Setting {
   key: string
   value: string
 }
+
+export interface NavLink {
+  id: number
+  name: string
+  url: string
+  order_num: number
+  created_at: string
+}

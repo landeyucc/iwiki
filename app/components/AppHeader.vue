@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Moon, Sun, Search, X, FileText, Globe } from '@lucide/vue'
-import type { Group, Article } from '~/types/article'
+import type { Group, Article, NavLink } from '~/types/article'
 
 const colorMode = useColorMode()
 const { isAuthenticated } = useAuth()
@@ -11,6 +11,9 @@ const pinnedGroups = computed(() => {
   if (!Array.isArray(groups.value)) return []
   return groups.value.filter((group: Group) => !!group.is_pinned && group.slug !== 'system')
 })
+
+const { data: navLinks } = await useFetch<NavLink[]>('/api/nav-links')
+const customLinks = computed(() => (Array.isArray(navLinks.value) ? navLinks.value : []))
 
 const toggleColorMode = () => {
   colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
@@ -205,6 +208,16 @@ const handleOutsideClick = (event: MouseEvent) => {
           >
             {{ group.name }}
           </NuxtLink>
+          <a
+            v-for="link in customLinks"
+            :key="link.id"
+            :href="link.url"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-sm font-medium transition-colors hover:text-primary"
+          >
+            {{ link.name }}
+          </a>
           <NuxtLink v-if="isAuthenticated" to="/admin" class="text-sm font-medium transition-colors hover:text-primary">后台管理</NuxtLink>
         </nav>
 

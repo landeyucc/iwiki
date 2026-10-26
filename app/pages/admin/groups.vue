@@ -109,7 +109,7 @@ definePageMeta({
           <tr class="border-b bg-muted/50 text-left">
             <th class="h-12 px-4 font-medium text-muted-foreground">名称</th>
             <th class="h-12 px-4 font-medium text-muted-foreground">Slug</th>
-            <th class="h-12 px-4 font-medium text-muted-foreground w-20 whitespace-nowrap">置顶</th>
+            <th class="h-12 px-4 font-medium text-muted-foreground w-20 whitespace-nowrap">Pin</th>
             <th class="h-12 px-4 font-medium text-muted-foreground">更新时间</th>
             <th class="h-12 px-4 text-right font-medium text-muted-foreground">操作</th>
           </tr>

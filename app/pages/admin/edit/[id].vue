@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Save, ArrowLeft, Dices, AlertTriangle } from '@lucide/vue'
+import { Save, ArrowLeft, Dices, AlertTriangle, ChevronDown, ChevronUp, Maximize2, Minimize2 } from '@lucide/vue'
 import { computed, ref } from 'vue'
 import type { Article, Group } from '~/types/article'
 
@@ -38,6 +38,15 @@ const isIndexArticle = computed(() => form.value.slug === 'index')
 
 const loading = ref(false)
 const saving = ref(false)
+const previewCollapsed = ref(false)
+const previewFullscreen = ref(false)
+
+const toggleFullscreen = () => {
+  previewFullscreen.value = !previewFullscreen.value
+  if (previewFullscreen.value) {
+    previewCollapsed.value = false
+  }
+}
 
 const generateRandomSlug = () => {
   if (isSystemIndexArticle.value) return
@@ -111,6 +120,37 @@ definePageMeta({
 
 <template>
   <div>
+    <!-- 全屏预览模态框 -->
+    <Teleport to="body">
+      <div
+        v-if="previewFullscreen"
+        class="fixed inset-0 z-[9999] bg-background overflow-auto"
+      >
+        <div class="sticky top-0 z-10 flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur">
+          <h2 class="text-lg font-semibold">预览: {{ form.title || '无标题' }}</h2>
+          <button
+            type="button"
+            class="p-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
+            title="退出全屏"
+            @click="previewFullscreen = false"
+          >
+            <Minimize2 class="h-5 w-5" />
+          </button>
+        </div>
+        <div class="container mx-auto p-8">
+          <div class="prose prose-zinc dark:prose-invert max-w-none">
+            <h1>{{ form.title || '标题预览' }}</h1>
+            <p v-if="form.description" class="lead text-muted-foreground">{{ form.description }}</p>
+            
+            <div class="mt-8 border-t pt-8">
+              <MDC v-if="form.content_type === 'md'" :value="form.content || '内容预览...'" />
+              <HtmlRenderer v-else :content="form.content || '内容预览...'" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+    
     <div class="flex items-center justify-between mb-8">
       <div class="flex items-center gap-4">
         <NuxtLink 
@@ -137,7 +177,7 @@ definePageMeta({
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"/>
     </div>
 
-    <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div v-else class="grid grid-cols-1 gap-8" :class="previewCollapsed ? 'lg:grid-cols-1' : 'lg:grid-cols-2'">
       <div class="space-y-6">
         <div class="space-y-2">
           <label class="text-sm font-medium">标题</label>
@@ -251,8 +291,32 @@ definePageMeta({
       </div>
 
       <div class="space-y-4">
-        <label class="text-sm font-medium text-muted-foreground uppercase tracking-wider">实时预览 ({{ form.content_type.toUpperCase() }})</label>
-        <div class="rounded-md border bg-card p-8 min-h-[500px]">
+        <div class="flex items-center justify-between">
+          <label class="text-sm font-medium text-muted-foreground uppercase tracking-wider">实时预览 ({{ form.content_type.toUpperCase() }})</label>
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              class="p-2 rounded-md hover:bg-accent transition-colors"
+              title="全屏预览"
+              @click="toggleFullscreen"
+            >
+              <Maximize2 class="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              class="p-2 rounded-md hover:bg-accent transition-colors"
+              :title="previewCollapsed ? '展开预览' : '折叠预览'"
+              @click="previewCollapsed = !previewCollapsed"
+            >
+              <ChevronDown v-if="previewCollapsed" class="h-4 w-4" />
+              <ChevronUp v-else class="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+        <div 
+          v-show="!previewCollapsed"
+          class="rounded-md border bg-card p-8 min-h-[500px]"
+        >
           <div class="prose prose-zinc dark:prose-invert max-w-none">
             <h1>{{ form.title || '标题预览' }}</h1>
             <p v-if="form.description" class="lead text-muted-foreground">{{ form.description }}</p>
@@ -263,6 +327,17 @@ definePageMeta({
             </div>
           </div>
         </div>
+        
+        <!-- 折叠状态下的悬浮展开按钮 -->
+        <button
+          v-if="previewCollapsed"
+          type="button"
+          class="fixed bottom-8 right-8 z-40 p-3 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-xl transition-all hover:scale-110"
+          title="展开预览"
+          @click="previewCollapsed = false"
+        >
+          <ChevronDown class="h-5 w-5" />
+        </button>
       </div>
     </div>
   </div>

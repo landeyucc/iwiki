@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import { Plus, Edit, Trash2, ExternalLink, Search, X } from '@lucide/vue'
-import type { Article } from '~/types/article'
+import { Plus, Edit, Trash2, ExternalLink, Search, X, Filter } from '@lucide/vue'
+import type { Article, Group } from '~/types/article'
 
 const { data: articlesData, refresh } = await useFetch<Article[]>('/api/articles')
 const articles = computed(() => (Array.isArray(articlesData.value) ? articlesData.value : []))
 
+const { data: groupsData } = await useFetch<Group[]>('/api/groups')
+const groups = computed(() => (Array.isArray(groupsData.value) ? groupsData.value : []))
+
 const searchQuery = ref('')
 const searchTerm = ref('')
+const selectedGroupId = ref<number | null>(null)
 
 const deleteArticle = async (articleId: number) => {
   if (!confirm('确定要删除这篇文章吗？')) return
@@ -19,14 +23,24 @@ const deleteArticle = async (articleId: number) => {
 }
 
 const filteredArticles = computed(() => {
-  if (!searchTerm.value) return articles.value
+  let result = articles.value
   
-  const term = searchTerm.value.toLowerCase()
-  return articles.value.filter(article => 
-    article.title.toLowerCase().includes(term) ||
-    article.description?.toLowerCase().includes(term) ||
-    article.slug.toLowerCase().includes(term)
-  )
+  // 按分组过滤
+  if (selectedGroupId.value !== null) {
+    result = result.filter(article => article.group_id === selectedGroupId.value)
+  }
+  
+  // 按搜索词过滤
+  if (searchTerm.value) {
+    const term = searchTerm.value.toLowerCase()
+    result = result.filter(article => 
+      article.title.toLowerCase().includes(term) ||
+      article.description?.toLowerCase().includes(term) ||
+      article.slug.toLowerCase().includes(term)
+    )
+  }
+  
+  return result
 })
 
 const highlightText = (text: string, term: string) => {
@@ -59,6 +73,19 @@ definePageMeta({
         <p class="text-muted-foreground">创建和编辑您的 Wiki 内容。</p>
       </div>
       <div class="flex items-center gap-4">
+        <div class="relative">
+          <Filter class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <select
+            v-model="selectedGroupId"
+            class="w-40 h-9 pl-9 pr-3 rounded-md border bg-background text-sm focus:ring-2 focus:ring-primary outline-none appearance-none"
+          >
+            <option :value="null">全部分组</option>
+            <option v-for="group in groups" :key="group.id" :value="group.id">
+              {{ group.name }}
+            </option>
+          </select>
+        </div>
+        
         <div class="relative">
           <Search class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input

@@ -4,6 +4,20 @@ const password = ref('')
 const error = ref('')
 const loading = ref(false)
 
+// 检查是否已登录，如果已登录则跳转到后台
+onMounted(async () => {
+  try {
+    const data = await $fetch('/api/auth/me', {
+      credentials: 'include'
+    })
+    if (data?.authenticated) {
+      navigateTo('/admin')
+    }
+  } catch (_err) {
+    // 未登录，保持在登录页
+  }
+})
+
 const login = async () => {
   loading.value = true
   error.value = ''
@@ -22,8 +36,7 @@ const login = async () => {
 }
 
 definePageMeta({
-  layout: 'default',
-  middleware: 'auth'
+  layout: 'default'
 })
 </script>
 

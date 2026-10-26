@@ -5,7 +5,8 @@ import {
   Settings, 
   LogOut, 
   Home,
-  Database
+  Database,
+  Navigation
 } from '@lucide/vue'
 
 const route = useRoute()
@@ -14,6 +15,7 @@ const { logout } = useAuth()
 const menuItems = [
   { name: '文章管理', path: '/admin', icon: FileText },
   { name: '分组管理', path: '/admin/groups', icon: FolderTree },
+  { name: '导航管理', path: '/admin/navigation', icon: Navigation },
   { name: '系统管理', path: '/admin/settings', icon: Settings },
   { name: '备份管理', path: '/admin/backup', icon: Database },
 ]

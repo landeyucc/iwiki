@@ -27,6 +27,14 @@ onMounted(() => {
       if (update.docChanged) {
         emit('update:modelValue', update.state.doc.toString())
       }
+    }),
+    EditorView.theme({
+      '&': {
+        height: 'auto'
+      },
+      '.cm-scroller': {
+        overflow: 'auto'
+      }
     })
   ]
 
@@ -62,11 +70,17 @@ watch(() => props.modelValue, (newValue) => {
 
 <style>
 .cm-editor {
-  height: 400px;
+  min-height: 400px;
+  max-height: 2000px;
   font-size: 14px;
 }
 
 .cm-scroller {
   overflow: auto;
+  max-height: 2000px;
+}
+
+.cm-content {
+  min-height: 400px;
 }
 </style>
